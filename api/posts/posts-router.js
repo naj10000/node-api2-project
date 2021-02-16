@@ -40,11 +40,9 @@ postsRouter.get('/:id', (req, res) => {
 
 postsRouter.post("/", (req, res) => {
     
-    
-
     posts.insert(req.body)
-        .then( post => {
-            if(!req.body.contents){
+        .then( (post) => {
+            if(!req.body.title || !req.body.contents){
                return  res.status(400).json({
                     message: "Please provide title and contents for the post" 
                 })
@@ -59,6 +57,30 @@ postsRouter.post("/", (req, res) => {
                 message: "There was an error while saving the post to the database."
             })
         })
+})
+
+postsRouter.delete('/:id', (req, res)=> {
+    posts.remove(req.params.id)
+        .then(post => {
+            if(post){
+                res.status(200).json('Post deleted!')
+            } else{
+                res.status(404).json({
+                    message: 'The post with the specified ID does not exist'
+                })
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.status(500).json({
+                error: "the post could not be removed"
+            })
+        })
+})
+
+postsRouter.put('/:id', (req, res) => {
+    posts.update(req.params.id, req.body)
+    
 })
 
 module.exports = postsRouter
